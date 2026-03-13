@@ -3,6 +3,7 @@ const DEBOUNCE_MS = 200;
 
 let templatesCache = [];
 let dropdown = null;
+let dropdownDoc = null;
 let activeIndex = 0;
 let activeCompose = null;
 let currentMatches = [];
@@ -34,7 +35,12 @@ async function loadTemplates() {
 }
 
 function ensureDropdown() {
-  if (dropdown) return dropdown;
+  const doc = activeCompose ? activeCompose.ownerDocument : document;
+  if (dropdown && dropdownDoc === doc) return dropdown;
+  if (dropdown) {
+    dropdown.remove();
+  }
+  dropdownDoc = doc;
   dropdown = createElement("div", { className: "smart-template-dropdown" });
   Object.assign(dropdown.style, {
     position: "absolute",
@@ -49,7 +55,7 @@ function ensureDropdown() {
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
     fontSize: "13px"
   });
-  document.body.appendChild(dropdown);
+  doc.body.appendChild(dropdown);
   return dropdown;
 }
 
@@ -70,8 +76,13 @@ function getActiveSlashQuery(text, caretOffset) {
   return { keyword: afterSlash, start: lastSlash };
 }
 
-function getCaretRect() {
-  const selection = window.getSelection();
+function getSelectionForCompose(composeEl) {
+  const win = composeEl.ownerDocument.defaultView;
+  return win ? win.getSelection() : null;
+}
+
+function getCaretRect(composeEl) {
+  const selection = getSelectionForCompose(composeEl);
   if (!selection || selection.rangeCount === 0) return null;
   const range = selection.getRangeAt(0).cloneRange();
   range.collapse(true);
@@ -79,16 +90,17 @@ function getCaretRect() {
   return rect || range.getBoundingClientRect();
 }
 
-function positionDropdown() {
-  const rect = getCaretRect();
+function positionDropdown(composeEl) {
+  const rect = getCaretRect(composeEl);
   if (!rect) return;
-  const top = rect.bottom + window.scrollY + 6;
-  const left = rect.left + window.scrollX;
+  const win = composeEl.ownerDocument.defaultView;
+  const top = rect.bottom + (win?.scrollY || 0) + 6;
+  const left = rect.left + (win?.scrollX || 0);
   dropdown.style.top = `${top}px`;
   dropdown.style.left = `${left}px`;
 }
 
-function renderDropdown(matches) {
+function renderDropdown(matches, composeEl) {
   ensureDropdown();
   dropdown.innerHTML = "";
   currentMatches = matches;
@@ -116,7 +128,7 @@ function renderDropdown(matches) {
     dropdown.appendChild(item);
   });
 
-  positionDropdown();
+  positionDropdown(composeEl);
   dropdown.style.display = "block";
 }
 
@@ -128,7 +140,7 @@ function setActiveIndex(index) {
 }
 
 function getComposeTextAndOffset(composeEl) {
-  const selection = window.getSelection();
+  const selection = getSelectionForCompose(composeEl);
   if (!selection || selection.rangeCount === 0) return null;
   const range = selection.getRangeAt(0);
   if (!composeEl.contains(range.startContainer)) return null;
@@ -142,7 +154,7 @@ function getComposeTextAndOffset(composeEl) {
 
 function replaceSlashCommand(composeEl, startOffset, endOffset, html) {
   composeEl.focus();
-  const selection = window.getSelection();
+  const selection = getSelectionForCompose(composeEl);
   if (!selection || selection.rangeCount === 0) return;
 
   const range = selection.getRangeAt(0);
@@ -216,7 +228,7 @@ const handleInput = debounce((event) => {
     .filter((t) => t.keyword.toLowerCase().startsWith(keyword))
     .slice(0, 6);
 
-  renderDropdown(matches);
+  renderDropdown(matches, composeEl);
 }, DEBOUNCE_MS);
 
 function handleKeydown(event) {
@@ -244,9 +256,9 @@ function handleFocus(event) {
 function bindEditor(editor) {
   if (editor.dataset.smartTemplateBound) return;
   editor.dataset.smartTemplateBound = "true";
-  editor.addEventListener("input", handleInput);
-  editor.addEventListener("keydown", handleKeydown);
-  editor.addEventListener("focus", handleFocus);
+  editor.addEventListener("input", handleInput, true);
+  editor.addEventListener("keydown", handleKeydown, true);
+  editor.addEventListener("focus", handleFocus, true);
 }
 
 function bindIframeEditor(iframe) {
