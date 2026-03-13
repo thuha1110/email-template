@@ -19,6 +19,7 @@ const formError = document.getElementById("formError");
 const richEditor = document.getElementById("richEditor");
 const toolbar = dialog.querySelector(".toolbar");
 const insertImageBtn = document.getElementById("insertImage");
+const uploadImageInput = document.getElementById("uploadImage");
 
 let templates = [];
 let editingId = null;
@@ -187,6 +188,18 @@ insertImageBtn.addEventListener("click", () => {
     document.execCommand("insertImage", false, url);
     richEditor.focus();
   }
+});
+
+uploadImageInput.addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    document.execCommand("insertImage", false, reader.result);
+    richEditor.focus();
+    uploadImageInput.value = "";
+  };
+  reader.readAsDataURL(file);
 });
 
 buildCategoryOptions();

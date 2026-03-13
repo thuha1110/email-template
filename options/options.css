@@ -58,12 +58,23 @@ input, select, textarea, button {
   align-items: center;
 }
 
-.toolbar button, .toolbar select, .toolbar input[type="color"] {
+.toolbar button, .toolbar select, .toolbar input[type="color"], .upload-btn {
   padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;
   font-size: 13px;
+}
+
+.upload-btn {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.upload-btn input {
+  display: none;
 }
 
 .rich-editor {
