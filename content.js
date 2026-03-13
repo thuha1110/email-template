@@ -241,16 +241,42 @@ function handleFocus(event) {
   activeCompose = event.target;
 }
 
+function bindEditor(editor) {
+  if (editor.dataset.smartTemplateBound) return;
+  editor.dataset.smartTemplateBound = "true";
+  editor.addEventListener("input", handleInput);
+  editor.addEventListener("keydown", handleKeydown);
+  editor.addEventListener("focus", handleFocus);
+}
+
+function bindIframeEditor(iframe) {
+  if (iframe.dataset.smartTemplateBound) return;
+  iframe.dataset.smartTemplateBound = "true";
+  const tryBind = () => {
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc || !doc.body) return;
+      const body = doc.body;
+      if (body.dataset.smartTemplateBound) return;
+      body.dataset.smartTemplateBound = "true";
+      body.addEventListener("input", handleInput);
+      body.addEventListener("keydown", handleKeydown);
+      body.addEventListener("focus", handleFocus);
+    } catch {
+      // Cross-origin iframe; ignore.
+    }
+  };
+  iframe.addEventListener("load", tryBind);
+  tryBind();
+}
+
 function observeComposeAreas() {
   const observer = new MutationObserver(() => {
     const editors = document.querySelectorAll('[contenteditable="true"]');
-    editors.forEach((editor) => {
-      if (editor.dataset.smartTemplateBound) return;
-      editor.dataset.smartTemplateBound = "true";
-      editor.addEventListener("input", handleInput);
-      editor.addEventListener("keydown", handleKeydown);
-      editor.addEventListener("focus", handleFocus);
-    });
+    editors.forEach(bindEditor);
+
+    const iframes = document.querySelectorAll("iframe");
+    iframes.forEach(bindIframeEditor);
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
