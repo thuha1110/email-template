@@ -1,6 +1,5 @@
-import { getTemplates } from "./utils/storage.js";
-import { debounce, createElement } from "./utils/dom.js";
-import { DEBOUNCE_MS } from "./utils/constants.js";
+const STORAGE_KEY = "smart_email_templates";
+const DEBOUNCE_MS = 200;
 
 let templatesCache = [];
 let dropdown = null;
@@ -8,8 +7,30 @@ let activeIndex = 0;
 let activeCompose = null;
 let currentMatches = [];
 
+function debounce(fn, delay) {
+  let timer = null;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+function createElement(tag, options = {}) {
+  const el = document.createElement(tag);
+  if (options.className) el.className = options.className;
+  if (options.text) el.textContent = options.text;
+  if (options.html) el.innerHTML = options.html;
+  if (options.attrs) {
+    Object.entries(options.attrs).forEach(([key, value]) => {
+      el.setAttribute(key, value);
+    });
+  }
+  return el;
+}
+
 async function loadTemplates() {
-  templatesCache = await getTemplates();
+  const result = await chrome.storage.local.get([STORAGE_KEY]);
+  templatesCache = result[STORAGE_KEY] || [];
 }
 
 function ensureDropdown() {
@@ -127,10 +148,7 @@ function replaceSlashCommand(composeEl, startOffset, endOffset, html) {
   const range = selection.getRangeAt(0);
   const preRange = range.cloneRange();
   preRange.selectNodeContents(composeEl);
-  const startRange = preRange.cloneRange();
-  const endRange = preRange.cloneRange();
 
-  // Walk text nodes to find offsets
   let currentOffset = 0;
   let startNode = null;
   let startNodeOffset = 0;
