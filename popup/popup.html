@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Email Templates</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Templates</h1>
+      <button id="openOptions" class="secondary">Manage</button>
+    </header>
+
+    <div class="controls">
+      <input id="searchInput" type="text" placeholder="Search templates..." />
+      <select id="categoryFilter"></select>
+    </div>
+
+    <div id="templateList" class="list"></div>
+
+    <button id="addTemplate" class="primary">+ Add Template</button>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

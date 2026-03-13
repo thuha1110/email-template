@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Smart Email Template Extension",
+  "version": "1.0.0",
+  "description": "Save email templates and insert them quickly in Gmail and Outlook Web using slash commands.",
+  "action": {
+    "default_title": "Smart Email Templates",
+    "default_popup": "popup/popup.html"
+  },
+  "options_page": "options/options.html",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

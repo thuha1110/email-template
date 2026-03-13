@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Templates</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>Template Manager</h1>
+        <p>Manage your email templates and slash commands.</p>
+      </div>
+      <button id="newTemplate" class="primary">+ New Template</button>
+    </header>
+
+    <section class="filters">
+      <input id="searchInput" type="text" placeholder="Search by title, keyword, content..." />
+      <select id="categoryFilter"></select>
+    </section>
+
+    <section class="content">
+      <div id="templateList" class="list"></div>
+    </section>
+
+    <dialog id="templateDialog">
+      <form id="templateForm" method="dialog">
+        <h2 id="formTitle">New Template</h2>
+        <div class="form-row">
+          <label>Title</label>
+          <input name="title" required />
+        </div>
+        <div class="form-row">
+          <label>Keyword</label>
+          <input name="keyword" required placeholder="thankyou" />
+          <small>Use without / (example: thankyou)</small>
+        </div>
+        <div class="form-row">
+          <label>Category</label>
+          <select name="category"></select>
+        </div>
+        <div class="form-row">
+          <label>Content (HTML supported)</label>
+          <textarea name="content" rows="6" required></textarea>
+        </div>
+        <div id="formError" class="error"></div>
+        <menu>
+          <button id="cancelBtn" type="reset" class="secondary">Cancel</button>
+          <button type="submit" class="primary">Save</button>
+        </menu>
+      </form>
+    </dialog>
+  </div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+:root {
+  --bg: #f9fafb;
+  --card: #ffffff;
+  --fg: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #2563eb;
+  --danger: #dc2626;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+header h1 {
+  margin: 0 0 4px;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+}
+
+input, select, textarea, button {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.filters input {
+  flex: 1;
+}
+
+.list {
+  display: grid;
+  gap: 14px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+button.primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+
+button.secondary {
+  background: #f3f4f6;
+}
+
+button.danger {
+  background: var(--danger);
+  color: white;
+  border: none;
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 20px 0;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 12px;
+  min-height: 16px;
+}
+
+menu {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 680px) {
+  .filters {
+    flex-direction: column;
+  }
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
