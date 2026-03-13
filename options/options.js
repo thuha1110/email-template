@@ -16,6 +16,9 @@ const dialog = document.getElementById("templateDialog");
 const form = document.getElementById("templateForm");
 const formTitle = document.getElementById("formTitle");
 const formError = document.getElementById("formError");
+const richEditor = document.getElementById("richEditor");
+const toolbar = dialog.querySelector(".toolbar");
+const insertImageBtn = document.getElementById("insertImage");
 
 let templates = [];
 let editingId = null;
@@ -63,10 +66,9 @@ function renderList() {
       className: "card-meta",
       text: `/${template.keyword} • ${template.category}`
     });
-    const preview = createElement("div", {
-      className: "card-meta",
-      text: template.content.length > 120 ? template.content.slice(0, 120) + "..." : template.content
-    });
+    const preview = createElement("div", { className: "card-meta" });
+  const textPreview = template.content.replace(/<[^>]*>/g, "");
+  preview.textContent = textPreview.length > 120 ? textPreview.slice(0, 120) + "..." : textPreview;
     const actions = createElement("div", { className: "card-actions" });
     const editBtn = createElement("button", { text: "Edit", className: "secondary" });
     const deleteBtn = createElement("button", { text: "Delete", className: "danger" });
@@ -98,11 +100,12 @@ function openEditor(template = null) {
     form.elements["title"].value = template.title;
     form.elements["keyword"].value = template.keyword;
     form.elements["category"].value = template.category;
-    form.elements["content"].value = template.content;
+    richEditor.innerHTML = template.content;
   } else {
     editingId = null;
     formTitle.textContent = "New Template";
     form.elements["category"].value = CATEGORIES[0];
+    richEditor.innerHTML = "";
   }
 
   dialog.showModal();
@@ -125,12 +128,18 @@ async function handleSubmit(event) {
     return;
   }
 
+  const contentHtml = richEditor.innerHTML.trim();
+  if (!contentHtml) {
+    formError.textContent = "Content is required";
+    return;
+  }
+
   const template = {
     id: editingId || crypto.randomUUID(),
     title: data.title.trim(),
     keyword,
     category: data.category,
-    content: data.content.trim(),
+    content: contentHtml,
     createdAt: editingId ? templates.find((t) => t.id === editingId)?.createdAt || Date.now() : Date.now()
   };
 
@@ -150,9 +159,34 @@ searchInput.addEventListener("input", onSearch);
 categoryFilter.addEventListener("change", renderList);
 newTemplateBtn.addEventListener("click", () => openEditor());
 form.addEventListener("submit", handleSubmit);
+form.addEventListener("reset", () => {
+  richEditor.innerHTML = "";
+});
 
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
+});
+
+toolbar.addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button || !button.dataset.cmd) return;
+  document.execCommand(button.dataset.cmd, false, null);
+  richEditor.focus();
+});
+
+toolbar.addEventListener("change", (event) => {
+  const target = event.target;
+  if (!target.dataset.cmd) return;
+  document.execCommand(target.dataset.cmd, false, target.value);
+  richEditor.focus();
+});
+
+insertImageBtn.addEventListener("click", () => {
+  const url = prompt("Image URL");
+  if (url) {
+    document.execCommand("insertImage", false, url);
+    richEditor.focus();
+  }
 });
 
 buildCategoryOptions();

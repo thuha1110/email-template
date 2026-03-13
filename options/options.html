@@ -42,8 +42,27 @@
           <select name="category"></select>
         </div>
         <div class="form-row">
-          <label>Content (HTML supported)</label>
-          <textarea name="content" rows="6" required></textarea>
+          <label>Content</label>
+          <div class="toolbar">
+            <button type="button" data-cmd="bold"><b>B</b></button>
+            <button type="button" data-cmd="italic"><i>I</i></button>
+            <button type="button" data-cmd="underline"><u>U</u></button>
+            <select data-cmd="fontName">
+              <option value="Arial">Arial</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Segoe UI">Segoe UI</option>
+              <option value="Roboto">Roboto</option>
+            </select>
+            <select data-cmd="fontSize">
+              <option value="2">12px</option>
+              <option value="3" selected>14px</option>
+              <option value="4">16px</option>
+              <option value="5">18px</option>
+            </select>
+            <input type="color" data-cmd="foreColor" value="#111827" />
+            <button type="button" id="insertImage">Image</button>
+          </div>
+          <div id="richEditor" class="rich-editor" contenteditable="true"></div>
         </div>
         <div id="formError" class="error"></div>
         <menu>
